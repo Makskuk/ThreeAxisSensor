@@ -9,18 +9,20 @@ Tested on Linux 4.1 with standard drivers:
 
 Example:
 
-ThreeAxisSensor accel("mma845x");
-QObject::connect(&accel, &ThreeAxisSensor::readingsChanged,
-                 [](int x, int y, int z){
-    qDebug()<<"x:" << x << "y:" << y << "z:" << z;
-});
+```
+  ThreeAxisSensor accel("mma845x");
+  QObject::connect(&accel, &ThreeAxisSensor::readingsChanged,
+                   [](int x, int y, int z){
+      qDebug()<<"x:" << x << "y:" << y << "z:" << z;
+  });
 
-accel.setPollInterval(500);
-accel.setActive(true);
-
+  accel.setPollInterval(500);
+  accel.setActive(true);
+```
 
 Class operates with driver's sysfs interface. Proper fiels finding
-automatically by given sensor name.
+automatically by given sensor name. Sensor name could be set in constructor 
+or with setDevice(QString sensorName) method. It must be name of sensor's driver.
 
 Note: class reads raw sensor data. To interpret data see to
 sensors' datasheet/appnote.

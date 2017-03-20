@@ -33,11 +33,13 @@ public:
     int y() const {return m_y;}
     int z() const {return m_z;}
     bool isActive() const {return m_isActive;}
+    bool isAvailable() const {return m_isAvailable;}
     int pollInterval() const {return m_pollInterval;}
     int position() const {return m_position;}
 
 signals:
-    void activeChanged(bool active);
+    void isActiveChanged(bool active);
+    void isAvailableChanged(bool isAvailable);
     void pollIntervalChanged(int interval);
     void positionChanged(int position);
     void readingsChanged(int x, int y, int z);
@@ -55,6 +57,7 @@ protected:
     QFile *m_pollIntervalFile;
     QFile *m_positionFile;
     QSocketNotifier *m_eventNotifier;
+    bool m_isAvailable;
     bool m_isActive;
     bool m_isDeviceSet;
     int m_position;

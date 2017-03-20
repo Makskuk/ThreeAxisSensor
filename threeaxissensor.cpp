@@ -6,6 +6,7 @@
 ThreeAxisSensor::ThreeAxisSensor(QObject *parent) : QObject(parent)
 {
     m_x = m_y = m_z = 0;
+    m_isAvailable = false;
     m_isActive = false;
     m_isDeviceSet = false;
 
@@ -85,7 +86,7 @@ void ThreeAxisSensor::setActive(bool active)
     }
 
     m_isActive = active;
-    emit activeChanged(m_isActive);
+    emit isActiveChanged(m_isActive);
 }
 
 void ThreeAxisSensor::setPollInterval(int interval)
@@ -161,6 +162,11 @@ int ThreeAxisSensor::setDevice(QString sensorName)
     if (!m_eventName.length())
     {
         qWarning()<<"Failed to find sensor" << sensorName;
+        if (m_isAvailable)
+        {
+            m_isAvailable = false;
+            emit isAvailableChanged(m_isAvailable);
+        }
         return -1;
     }
 
@@ -199,6 +205,11 @@ int ThreeAxisSensor::setDevice(QString sensorName)
         setActive(true);
 
     m_isDeviceSet = true;
+    if (!m_isAvailable)
+    {
+        m_isAvailable = true;
+        emit isAvailableChanged(m_isAvailable);
+    }
     return 0;
 }
 

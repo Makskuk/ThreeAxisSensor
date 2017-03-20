@@ -19,6 +19,7 @@
 #define SYSFS_POSTFIX_POLLRATE  "/device/poll"
 #define SYSFS_POSTFIX_MIN       "/device/min"
 #define SYSFS_POSTFIX_MAX       "/device/max"
+#define SYSFS_POSTFIX_POSITION  "/device/position"
 
 class ThreeAxisSensor : public QObject
 {
@@ -33,15 +34,18 @@ public:
     int z() const {return m_z;}
     bool isActive() const {return m_isActive;}
     int pollInterval() const {return m_pollInterval;}
+    int position() const {return m_position;}
 
 signals:
     void activeChanged(bool active);
     void pollIntervalChanged(int interval);
+    void positionChanged(int position);
     void readingsChanged(int x, int y, int z);
 
 public slots:
     void setActive(bool active);
     void setPollInterval(int interval);
+    void setPosition(int position);
     int setDevice(QString sensorName);
 
 protected:
@@ -49,9 +53,11 @@ protected:
     QFile *m_eventFile;
     QFile *m_enableFile;
     QFile *m_pollIntervalFile;
+    QFile *m_positionFile;
     QSocketNotifier *m_eventNotifier;
     bool m_isActive;
     bool m_isDeviceSet;
+    int m_position;
     int m_pollInterval, m_pollMax, m_pollMin;
     int m_x, m_y, m_z;
 

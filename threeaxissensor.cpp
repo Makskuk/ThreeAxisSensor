@@ -12,6 +12,7 @@ ThreeAxisSensor::ThreeAxisSensor(QObject *parent) : QObject(parent)
     m_eventFile = new QFile();
     m_enableFile = new QFile();
     m_pollIntervalFile = new QFile();
+    m_positionFile = new QFile();
 }
 
 /**
@@ -30,6 +31,7 @@ ThreeAxisSensor::~ThreeAxisSensor()
     delete m_eventFile;
     delete m_enableFile;
     delete m_pollIntervalFile;
+    delete m_positionFile;
 }
 
 /**
@@ -118,6 +120,33 @@ void ThreeAxisSensor::setPollInterval(int interval)
     emit pollIntervalChanged(m_pollInterval);
 }
 
+void ThreeAxisSensor::setPosition(int position)
+{
+    if (position == m_position)
+        return;
+
+    if (!m_isDeviceSet)
+    {
+        qWarning()<<"setPollInterval failed! Device is not set!";
+        return;
+    }
+
+    int count;
+
+    m_positionFile->open(QIODevice::WriteOnly);
+    count = m_positionFile->write(QByteArray::number(position));
+    m_positionFile->close();
+
+    if (count <= 0)
+    {
+        qWarning()<<"Failed to write to file"<<m_positionFile->fileName();
+        return;
+    }
+
+    m_position = position;
+    emit positionChanged(m_position);
+}
+
 /**
  * @brief ThreeAxisSensor::setDevice
  * @param sensorName
@@ -143,6 +172,7 @@ int ThreeAxisSensor::setDevice(QString sensorName)
     m_eventFile->setFileName(DEV_INPUT_PATH+m_eventName);
     m_enableFile->setFileName(SYSFS_INPUT_PATH+m_eventName+SYSFS_POSTFIX_ENABLE);
     m_pollIntervalFile->setFileName(SYSFS_INPUT_PATH+m_eventName+SYSFS_POSTFIX_POLLRATE);
+    m_positionFile->setFileName(SYSFS_INPUT_PATH+m_eventName+SYSFS_POSTFIX_POSITION);
 
     // get default poll parameters from sensor driver
     m_pollIntervalFile->open(QIODevice::ReadOnly);
@@ -158,6 +188,11 @@ int ThreeAxisSensor::setDevice(QString sensorName)
     pollMax.open(QIODevice::ReadOnly);
     m_pollMax = pollMax.readAll().simplified().toInt();
     pollMax.close();
+
+    // get default position from driver
+    m_positionFile->open(QIODevice::ReadOnly);
+    m_position = m_positionFile->readAll().simplified().toInt();
+    m_positionFile->close();
 
     // start again if was started before
     if (oldActive)

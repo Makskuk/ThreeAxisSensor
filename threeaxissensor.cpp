@@ -121,6 +121,13 @@ void ThreeAxisSensor::setPollInterval(int interval)
     emit pollIntervalChanged(m_pollInterval);
 }
 
+
+/**
+ * @brief ThreeAxisSensor::setPosition
+ * @param position - in range from 0 to 7
+ *
+ * code of sensor orientation, for more details see sensor's appnote
+ */
 void ThreeAxisSensor::setPosition(int position)
 {
     if (position == m_position)
@@ -155,6 +162,7 @@ void ThreeAxisSensor::setPosition(int position)
  *
  * Set new sensor device and init (or reinit) instances of sysfs files.
  * If sensor was activated - restarts it.
+ * If failed to find device - set isAvailable flag to false (or to true otherwise )
  */
 int ThreeAxisSensor::setDevice(QString sensorName)
 {
